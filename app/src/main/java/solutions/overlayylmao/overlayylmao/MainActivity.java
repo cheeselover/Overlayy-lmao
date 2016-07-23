@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.stop_button)
     Button mStopButton;
 
+    @Bind(R.id.pref_button)
+    Button mPreferencesButton;
+
     Notification mOverlayNotification;
     NotificationManager mNotificationManager;
     final int OVERLAY_NOTIFICATION_ID = 1337;
@@ -117,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
         am.cancel(pi);
         mNotificationManager.cancel(OVERLAY_NOTIFICATION_ID);
+    }
+
+    @OnClick(R.id.pref_button)
+    void openPreferences() {
+        Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        MainActivity.this.startActivity(myIntent);
     }
 }
 
