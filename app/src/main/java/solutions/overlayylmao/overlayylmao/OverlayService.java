@@ -28,8 +28,9 @@ import java.util.TimerTask;
 
 public class OverlayService extends AccessibilityService {
 
-    public static final String EXTRA_RESULT_CODE = "result_code";
-    public static final String EXTRA_DATA = "data";
+    static final String EXTRA_RESULT_CODE = "result_code";
+    static final String EXTRA_DATA = "data";
+    static final String EXTRA_PRESET = "present";
 
     private static String TAG = OverlayService.class.getSimpleName();
 
@@ -43,7 +44,10 @@ public class OverlayService extends AccessibilityService {
     private ImageReader mImageReader;
     private DisplayMetrics mRealMetrics = new DisplayMetrics();
     private DisplayMetrics mFakeMetrics = new DisplayMetrics();
+
     private boolean useImage = false;
+    private int updateTime;
+    private int
 
 
     @Override
