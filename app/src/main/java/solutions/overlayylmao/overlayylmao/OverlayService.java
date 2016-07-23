@@ -15,15 +15,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -144,7 +140,7 @@ public class OverlayService extends AccessibilityService {
                 public void run() {
                     imageHandler2.sendEmptyMessage(0);
                 }
-            }, 50);
+            }, 25);
 
         }
     };
@@ -175,19 +171,11 @@ public class OverlayService extends AccessibilityService {
 // create bitmap
                 Bitmap bitmap = Bitmap.createBitmap(width+rowPadding/pixelStride, height, Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(buffer);
-                chatHead.setImageBitmap(bitmap);
+                Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+                bitmap.recycle();
+                chatHead.setImageBitmap(newBitmap);
                 image.close();
                 setupImageWatching();
-
-                try {
-                    FileOutputStream out = new FileOutputStream(getApplicationContext().getFilesDir().getAbsolutePath() + "/derp.jpg");
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                    out.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
 
 //                chatHead.setImageResource(R.drawable.rainbow);
@@ -195,14 +183,14 @@ public class OverlayService extends AccessibilityService {
             WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
                     PixelFormat.TRANSLUCENT);
 
-            params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+//            params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
 
             params.x = 0;
-            params.y = 0;
+            params.y = -50;
             params.width = mMetrics.widthPixels;
             params.height = mMetrics.heightPixels;
 //            params.width = metrics.widthPixels - metrics.widthPixels/50;
