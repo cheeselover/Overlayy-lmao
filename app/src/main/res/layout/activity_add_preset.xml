@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:id="@+id/activity_add_preset"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rainbow_tile"
+    tools:context="solutions.overlayylmao.overlayylmao.AddPresetActivity"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+        <EditText
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:inputType="text"
+            />
+
+        <EditText
+            android:id="@+id/updateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Refresh Time (0 for live)"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/horizontalGravity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Horizontal gravity (0 for none, 1 for center)"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/verticalGravity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vertical gravity (0 for none, 48 for top)"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/xOffset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="X Offset"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/yOffset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Y Offset"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Width %"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Height %"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/rotation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Rotation Degrees"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/scaleX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Scale X"
+            android:inputType="number"
+            />
+
+        <EditText
+            android:id="@+id/scaleY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Scale Y"
+            android:inputType="number"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cover status bar"
+            />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/coverStatusBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cover nav bar"
+            />
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/coverNavBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            />
+
+    </LinearLayout>
+
+</ScrollView>

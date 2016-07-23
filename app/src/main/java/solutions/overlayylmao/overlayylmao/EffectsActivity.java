@@ -1,23 +1,21 @@
 package solutions.overlayylmao.overlayylmao;
 
-import android.media.effect.Effect;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class EffectsActivity extends AppCompatActivity {
 
@@ -57,5 +55,20 @@ public class EffectsActivity extends AppCompatActivity {
         });
 
         Requester.getInstance(this).addToRequestQueue(jsonArrayRequest);
+    }
+
+    void loadData() {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        loadData();
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @OnClick(R.id.fab)
+    void createPreset() {
+        startActivityForResult(new Intent(this, AddPresetActivity.class), 11);
     }
 }
