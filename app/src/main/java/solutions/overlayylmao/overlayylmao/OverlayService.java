@@ -3,6 +3,7 @@ package solutions.overlayylmao.overlayylmao;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
@@ -13,8 +14,10 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -43,6 +46,7 @@ public class OverlayService extends AccessibilityService {
     private ImageReader mImageReader;
     private DisplayMetrics mRealMetrics = new DisplayMetrics();
     private DisplayMetrics mFakeMetrics = new DisplayMetrics();
+    private SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     private boolean useImage = false;
     private Preset preset;

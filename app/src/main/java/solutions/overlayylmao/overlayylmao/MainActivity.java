@@ -108,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.stop_button)
     Button mStopButton;
 
-    @Bind(R.id.pref_button)
-    Button mPreferencesButton;
+    @Bind(R.id.open_effects_button)
+    Button mOpenEffectsButton;
 
     Notification mOverlayNotification;
     NotificationManager mNotificationManager;
@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.start_button)
     void startService() {
+        Log.d("activity", "starting service");
         startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), 10);
     }
 
@@ -186,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
         mNotificationManager.cancel(OVERLAY_NOTIFICATION_ID);
     }
 
-    @OnClick(R.id.pref_button)
+    @OnClick(R.id.open_effects_button)
     void openPreferences() {
-        Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+        Intent myIntent = new Intent(MainActivity.this, EffectsActivity.class);
         MainActivity.this.startActivity(myIntent);
     }
 }

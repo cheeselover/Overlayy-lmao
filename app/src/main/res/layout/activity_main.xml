@@ -32,7 +32,7 @@
         android:text="Stop Cinematic Mode"/>
 
     <Button
-        android:id="@+id/pref_button"
+        android:id="@+id/open_effects_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/ButtonStyle"

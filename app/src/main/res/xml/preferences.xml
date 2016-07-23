@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference
-        android:key="pref_center"
-        android:title="@string/pref_center"
-        android:summary="@string/pref_center_summ"
-        android:entries="@array/effects"
-        android:entryValues="@array/effects"/>
-</PreferenceScreen>
