@@ -75,7 +75,7 @@ public class OverlayService extends AccessibilityService {
         mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getMetrics(mMetrics);
+        windowManager.getDefaultDisplay().getRealMetrics(mMetrics);
 
         setupImageWatching();
 
@@ -155,6 +155,7 @@ public class OverlayService extends AccessibilityService {
             Log.d("OVERLAYY", "imagehandlerTWO");
             Image image = mImageReader.acquireLatestImage();
             if (image != null) {
+                Log.d("OVROSRYUTNSTR", "w" + image.getWidth() + ", h" + image.getHeight());
 //                Image.Plane[] planes = image.getPlanes();
 //                ByteBuffer buffer = planes[0].getBuffer();
 //                int pixelStride = planes[0].getPixelStride();
@@ -164,7 +165,8 @@ public class OverlayService extends AccessibilityService {
 //                Bitmap bitmap = Bitmap.createBitmap(mMetrics.widthPixels + rowPadding / pixelStride, mMetrics.heightPixels, Bitmap.Config.ARGB_8888);
 //                bitmap.copyPixelsFromBuffer(buffer);
                 int width = mMetrics.widthPixels;
-                int height = mMetrics.heightPixels;
+//                int height = mMetrics.heightPixels;
+                int height = image.getHeight();
                 final Image.Plane[] planes = image.getPlanes();
                 final ByteBuffer buffer = planes[0].getBuffer();
                 int pixelStride = planes[0].getPixelStride();
