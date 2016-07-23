@@ -1,4 +1,6 @@
 # Created by https://www.gitignore.io/api/android,intellij
+#
+node_modules
 
 ### Android ###
 # Built application files

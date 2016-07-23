@@ -1,0 +1,22 @@
+{
+  "name": "overlayy-lmao",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node_modules/.bin/json-server --watch backend/db.json -p $PORT"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siva-mahadevan/Overlayy-lmao.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/siva-mahadevan/Overlayy-lmao/issues"
+  },
+  "homepage": "https://github.com/siva-mahadevan/Overlayy-lmao#readme",
+  "dependencies": {
+    "json-server": "^0.8.16"
+  }
+}

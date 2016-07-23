@@ -3,9 +3,10 @@ package solutions.overlayylmao.overlayylmao;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
@@ -13,12 +14,13 @@ import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -38,7 +40,8 @@ public class OverlayService extends AccessibilityService {
 
     private WindowManager windowManager;
     private ImageView imageOverlay;
-    private SurfaceView surfaceOverlay;
+    private TextureView surfaceOverlay;
+    private SurfaceTexture surfaceTexture;
     private Timer mTimer;
     private MediaProjectionManager mMediaProjectionManager;
     private MediaProjection mMediaProjection;
@@ -46,7 +49,7 @@ public class OverlayService extends AccessibilityService {
     private ImageReader mImageReader;
     private DisplayMetrics mRealMetrics = new DisplayMetrics();
     private DisplayMetrics mFakeMetrics = new DisplayMetrics();
-    private SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    private Handler backgroundHandler;
 
     private boolean useImage = false;
     private Preset preset;
@@ -87,6 +90,10 @@ public class OverlayService extends AccessibilityService {
         mTimer = new Timer();
         super.onCreate();
 
+        HandlerThread handlerThread = new HandlerThread("Overlayylmao");
+        handlerThread.start();
+        backgroundHandler = new Handler(handlerThread.getLooper());
+
         if (useImage) {
             mTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
@@ -113,6 +120,7 @@ public class OverlayService extends AccessibilityService {
         if (!useImage && surfaceOverlay != null && surfaceOverlay.isAttachedToWindow()) windowManager.removeView(surfaceOverlay);
         if (mMediaProjection != null) mMediaProjection.stop();
         if (mVirtualDisplay != null) mVirtualDisplay.release();
+        if (surfaceTexture != null) surfaceTexture.release();
         mTimer.cancel();
     }
 
@@ -132,18 +140,40 @@ public class OverlayService extends AccessibilityService {
         @Override
         public void handleMessage(Message msg) {
             boolean firstTime = false;
+            final DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
             if (surfaceOverlay == null) {
                 firstTime = true;
-                surfaceOverlay = new SurfaceView(OverlayService.this);
+                surfaceOverlay = new TextureView(OverlayService.this);
+                Matrix transform = new Matrix();
+                int midWidth = metrics.widthPixels/2;
+                int midHeight = metrics.heightPixels/2;
+                transform.preRotate(preset.rotation, midWidth, midHeight);
+                transform.preScale(preset.scaleX / 100f, preset.scaleY / 100f, midWidth, midHeight);
+                surfaceOverlay.setTransform(transform);
+                surfaceOverlay.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+                    @Override
+                    public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                        OverlayService.this.surfaceTexture = surfaceTexture;
+
+                        mVirtualDisplay = mMediaProjection.createVirtualDisplay("Overlayy lmao",
+                                metrics.widthPixels, metrics.heightPixels, metrics.densityDpi,
+                                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                                new Surface(surfaceTexture), null, null);
+                    }
+
+                    @Override
+                    public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) { }
+
+                    @Override
+                    public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) { }
+                });
 //                surfaceOverlay.setRotation(90);
             }
-
-            DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
-
-            mVirtualDisplay = mMediaProjection.createVirtualDisplay("Overlayy lmao",
-                    metrics.widthPixels, metrics.heightPixels, metrics.densityDpi,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    surfaceOverlay.getHolder().getSurface(), null, null);
 
             if (firstTime) windowManager.addView(surfaceOverlay, getParams());
         }
@@ -162,23 +192,31 @@ public class OverlayService extends AccessibilityService {
 
             if (imageOverlay.isAttachedToWindow()) windowManager.removeView(imageOverlay);
 
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    imageHandler2.sendEmptyMessage(0);
-                }
-            }, 25);
+            backgroundHandler.postDelayed(imageHandler2, 25);
+
+//            mTimer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    imageHandler2.sendEmptyMessage(0);
+//                }
+//            }, 25);
 
         }
     };
 
-    private final Handler imageHandler2 = new Handler() {
+    private final Runnable imageHandler2 = new Runnable() {
         @Override
-        public void handleMessage(Message msg) {
+        public void run() {
             Log.d("OVERLAYY", "imagehandlerTWO");
             DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
             Image image = mImageReader.acquireLatestImage();
             if (image != null) {
+                Matrix transform = new Matrix();
+                int midWidth = metrics.widthPixels/2;
+                int midHeight = metrics.heightPixels/2;
+                transform.preRotate(preset.rotation, midWidth, midHeight);
+                transform.preScale(preset.scaleX / 100f, preset.scaleY / 100f, midWidth, midHeight);
+
                 int width = metrics.widthPixels;
                 int height = image.getHeight();
                 final Image.Plane[] planes = image.getPlanes();
@@ -186,18 +224,24 @@ public class OverlayService extends AccessibilityService {
                 int pixelStride = planes[0].getPixelStride();
                 int rowStride = planes[0].getRowStride();
                 int rowPadding = rowStride - pixelStride * width;
+
                 Bitmap bitmap = Bitmap.createBitmap(width+rowPadding/pixelStride, height, Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(buffer);
-                Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+                final Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, transform, true);
                 bitmap.recycle();
-                imageOverlay.setImageBitmap(newBitmap);
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageOverlay.setImageBitmap(newBitmap);
+                        if(!imageOverlay.isAttachedToWindow()) windowManager.addView(imageOverlay, getParams());
+                    }
+                });
+
                 image.close();
                 setupImageWatching();
             }
 
-            WindowManager.LayoutParams params = getParams();
-
-            if(!imageOverlay.isAttachedToWindow()) windowManager.addView(imageOverlay, params);
         }
     };
 

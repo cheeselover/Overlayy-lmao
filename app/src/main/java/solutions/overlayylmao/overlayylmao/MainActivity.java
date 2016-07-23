@@ -24,82 +24,19 @@ public class MainActivity extends AppCompatActivity {
     static {
         preset = new Preset();
 
-        // Tunnel vision
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 100;
-        preset.width = 98;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-
-        // Tunnel to the right
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
-        preset.width = 92;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-
-        // Slide To the right
+        // 1 fps flipped
         preset.coverStatusBar = true;
-        preset.coverNavBar = false;
+        preset.coverNavBar = true;
         preset.verticalGravity = Gravity.TOP;
         preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
         preset.height = 100;
-        preset.width = 98;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-
-        // Slide To the right big
-        preset.coverStatusBar = true;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 100;
-        preset.width = 90;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-
-        // Tunnel bottom right
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.BOTTOM;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
-        preset.width = 95;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-
-        // Vertical tunnel
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
         preset.width = 100;
-        preset.updateTime = 0;
+        preset.updateTime = 1500;
         preset.xOffset = 0;
         preset.yOffset = 0;
-
-        // Vertical tunnel
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
-        preset.width = 95;
-        preset.updateTime = 0;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
+        preset.rotation = 180;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
     }
 
     @Bind(R.id.start_button)
