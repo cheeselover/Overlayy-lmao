@@ -90,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
             mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
             return;
         } else if(requestCode == 52) {
-            mPreset = data.getParcelableExtra(OverlayService.EXTRA_PRESET);
+            if(data != null) {
+                mPreset = data.getParcelableExtra(OverlayService.EXTRA_PRESET);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
