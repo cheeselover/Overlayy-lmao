@@ -1,5 +1,6 @@
 package solutions.overlayylmao.overlayylmao;
 
+import android.media.effect.Effect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +26,6 @@ public class EffectsActivity extends AppCompatActivity {
 
     RecyclerView.Adapter mAdapter;
     RecyclerView.LayoutManager mLayoutManager;
-    JSONArray mPresets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class EffectsActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(JSONArray response) {
-                mAdapter = new PresetAdapter(response);
+                mAdapter = new PresetAdapter(response, EffectsActivity.this, mPresetRecyclerView);
                 mPresetRecyclerView.setAdapter(mAdapter);
             }
         }, new Response.ErrorListener() {

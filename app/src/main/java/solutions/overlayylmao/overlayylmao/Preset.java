@@ -2,25 +2,22 @@ package solutions.overlayylmao.overlayylmao;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-/**
- * Created by daniel on 2016-07-23.
- */
+import android.view.Gravity;
 
 public class Preset implements Parcelable {
-    String title;
-    int updateTime;
-    int verticalGravity;
-    int horizontalGravity;
-    int xOffset;
-    int yOffset;
-    int width;
-    int height;
-    boolean coverStatusBar;
-    boolean coverNavBar;
-    int rotation;
-    int scaleX;
-    int scaleY;
+    String title = "Default";
+    boolean coverStatusBar = true;
+    boolean coverNavBar = true;
+    int verticalGravity = Gravity.TOP;
+    int horizontalGravity = Gravity.CENTER_HORIZONTAL;
+    int height = 100;
+    int width = 100;
+    int updateTime = 1500;
+    int xOffset = 0;
+    int yOffset = 0;
+    int rotation = 180;
+    int scaleX = 100;
+    int scaleY = 100;
 
     @Override
     public int describeContents() {

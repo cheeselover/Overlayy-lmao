@@ -4,4 +4,6 @@
     android:background="@color/white"
     android:padding="16dp">
     android:id="@+id/preset_text_view"
+    android:onClick="onClick"
+    android:clickable="true"
 </TextView>

@@ -10,7 +10,6 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.Button;
 
 import butterknife.Bind;
@@ -19,25 +18,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final Preset preset;
-
-    static {
-        preset = new Preset();
-
-        // 1 fps flipped
-        preset.coverStatusBar = true;
-        preset.coverNavBar = true;
-        preset.verticalGravity = Gravity.TOP;
-        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 100;
-        preset.width = 100;
-        preset.updateTime = 1500;
-        preset.xOffset = 0;
-        preset.yOffset = 0;
-        preset.rotation = 180;
-        preset.scaleX = 100;
-        preset.scaleY = 100;
-    }
+    private Preset mPreset;
 
     @Bind(R.id.start_button)
     Button mStartButton;
@@ -83,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         mMediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         mOverlayNotification = mBuilder.build();
+        mPreset = new Preset();
     }
 
     @Override
@@ -103,10 +85,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, OverlayService.class);
             intent.putExtra(OverlayService.EXTRA_RESULT_CODE, resultCode);
             intent.putExtra(OverlayService.EXTRA_DATA, data);
-            intent.putExtra(OverlayService.EXTRA_PRESET, preset);
+            intent.putExtra(OverlayService.EXTRA_PRESET, mPreset);
             startService(intent);
             mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
             return;
+        } else if(requestCode == 52) {
+            mPreset = data.getParcelableExtra(OverlayService.EXTRA_PRESET);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -127,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.open_effects_button)
     void openPreferences() {
         Intent myIntent = new Intent(MainActivity.this, EffectsActivity.class);
-        MainActivity.this.startActivity(myIntent);
+        MainActivity.this.startActivityForResult(myIntent, 52);
     }
 }
 

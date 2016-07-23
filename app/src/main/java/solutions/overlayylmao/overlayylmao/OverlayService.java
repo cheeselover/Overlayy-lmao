@@ -34,7 +34,7 @@ public class OverlayService extends AccessibilityService {
 
     static final String EXTRA_RESULT_CODE = "result_code";
     static final String EXTRA_DATA = "data";
-    static final String EXTRA_PRESET = "present";
+    static final String EXTRA_PRESET = "preset";
 
     private static String TAG = OverlayService.class.getSimpleName();
 
