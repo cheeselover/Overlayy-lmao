@@ -15,6 +15,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -32,14 +34,16 @@ public class OverlayService extends AccessibilityService {
     private static String TAG = OverlayService.class.getSimpleName();
 
     private WindowManager windowManager;
-//    private SurfaceView chatHead;
-    private ImageView chatHead;
+    private ImageView imageOverlay;
+    private SurfaceView surfaceOverlay;
     private Timer mTimer;
     private MediaProjectionManager mMediaProjectionManager;
     private MediaProjection mMediaProjection;
     private VirtualDisplay mVirtualDisplay;
     private ImageReader mImageReader;
-    private DisplayMetrics mMetrics = new DisplayMetrics();
+    private DisplayMetrics mRealMetrics = new DisplayMetrics();
+    private DisplayMetrics mFakeMetrics = new DisplayMetrics();
+    private boolean useImage = false;
 
 
     @Override
@@ -71,33 +75,38 @@ public class OverlayService extends AccessibilityService {
         mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        windowManager.getDefaultDisplay().getRealMetrics(mMetrics);
+        windowManager.getDefaultDisplay().getRealMetrics(mRealMetrics);
+        windowManager.getDefaultDisplay().getMetrics(mFakeMetrics);
 
         setupImageWatching();
 
         mTimer = new Timer();
         super.onCreate();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                imageHandler.sendEmptyMessage(0);
-            }
-        }, 0, 1000);
-//        imageHandler.sendEmptyMessage(0);
-//        imageHandler.sendEmptyMessage(0);
-//        mTimer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                imageHandler.sendEmptyMessage(0);
-//            }
-//        }, 1000);
+
+        if (useImage) {
+            mTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    imageHandler.sendEmptyMessage(0);
+                }
+            }, 0, 1000);
+        } else {
+            surfaceHandler.sendEmptyMessage(0);
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    surfaceHandler.sendEmptyMessage(0);
+                }
+            }, 1000);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (chatHead != null) windowManager.removeView(chatHead);
+        if (useImage && imageOverlay != null && imageOverlay.isAttachedToWindow()) windowManager.removeView(imageOverlay);
+        if (!useImage && surfaceOverlay != null && surfaceOverlay.isAttachedToWindow()) windowManager.removeView(surfaceOverlay);
         if (mMediaProjection != null) mMediaProjection.stop();
         if (mVirtualDisplay != null) mVirtualDisplay.release();
         mTimer.cancel();
@@ -106,14 +115,31 @@ public class OverlayService extends AccessibilityService {
     private void setupImageWatching() {
         if (mImageReader != null) mImageReader.close();
         if (mVirtualDisplay != null) mVirtualDisplay.release();
-        mImageReader = ImageReader.newInstance(mMetrics.widthPixels, mMetrics.heightPixels, PixelFormat.RGBA_8888, 2);
+        mImageReader = ImageReader.newInstance(mRealMetrics.widthPixels, mRealMetrics.heightPixels, PixelFormat.RGBA_8888, 2);
 
         mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenCapture",
-                mMetrics.widthPixels, mMetrics.heightPixels, mMetrics.densityDpi,
+                mRealMetrics.widthPixels, mRealMetrics.heightPixels, mRealMetrics.densityDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mImageReader.getSurface(), null, null);
-//                    chatHead.getHolder().getSurface(), null, null);
     }
+
+    private final Handler surfaceHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            boolean firstTime = false;
+            if (surfaceOverlay == null) {
+                firstTime = true;
+                surfaceOverlay = new SurfaceView(OverlayService.this);
+            }
+
+            mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenCapture",
+                    mFakeMetrics.widthPixels, mFakeMetrics.heightPixels, mFakeMetrics.densityDpi,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    surfaceOverlay.getHolder().getSurface(), null, null);
+
+            if (firstTime) windowManager.addView(surfaceOverlay, getParams());
+        }
+    };
 
     private final Handler imageHandler = new Handler() {
 
@@ -121,19 +147,12 @@ public class OverlayService extends AccessibilityService {
         public void handleMessage(Message msg) {
 
             Log.d("OVERLAYY", "imagehandler");
-            if(chatHead == null) {
+            if(imageOverlay == null) {
                 Log.d("service", "first time");
-                chatHead = new ImageView(OverlayService.this);
-                chatHead.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                chatHead.setBackgroundColor(Color.CYAN);
-//                chatHead = new SurfaceView(OverlayService.this);
+                imageOverlay = new ImageView(OverlayService.this);
             }
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//                Bitmap bitmap = BitmapFactory.decodeFile(scr.getAbsolutePath(), options);
-//                chatHead.setImageBitmap(bitmap);
 
-            if (chatHead.isAttachedToWindow()) windowManager.removeView(chatHead);
+            if (imageOverlay.isAttachedToWindow()) windowManager.removeView(imageOverlay);
 
             mTimer.schedule(new TimerTask() {
                 @Override
@@ -151,57 +170,47 @@ public class OverlayService extends AccessibilityService {
             Log.d("OVERLAYY", "imagehandlerTWO");
             Image image = mImageReader.acquireLatestImage();
             if (image != null) {
-                Log.d("OVROSRYUTNSTR", "w" + image.getWidth() + ", h" + image.getHeight());
-//                Image.Plane[] planes = image.getPlanes();
-//                ByteBuffer buffer = planes[0].getBuffer();
-//                int pixelStride = planes[0].getPixelStride();
-//                int rowStride = planes[0].getRowStride();
-//                int rowPadding = rowStride - pixelStride * mMetrics.widthPixels;
-//
-//                Bitmap bitmap = Bitmap.createBitmap(mMetrics.widthPixels + rowPadding / pixelStride, mMetrics.heightPixels, Bitmap.Config.ARGB_8888);
-//                bitmap.copyPixelsFromBuffer(buffer);
-                int width = mMetrics.widthPixels;
-//                int height = mMetrics.heightPixels;
+                int width = mRealMetrics.widthPixels;
                 int height = image.getHeight();
                 final Image.Plane[] planes = image.getPlanes();
                 final ByteBuffer buffer = planes[0].getBuffer();
                 int pixelStride = planes[0].getPixelStride();
                 int rowStride = planes[0].getRowStride();
                 int rowPadding = rowStride - pixelStride * width;
-// create bitmap
                 Bitmap bitmap = Bitmap.createBitmap(width+rowPadding/pixelStride, height, Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(buffer);
                 Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                 bitmap.recycle();
-                chatHead.setImageBitmap(newBitmap);
+                imageOverlay.setImageBitmap(newBitmap);
                 image.close();
                 setupImageWatching();
             }
 
-//                chatHead.setImageResource(R.drawable.rainbow);
+            WindowManager.LayoutParams params = getParams();
 
-            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT,
-                    WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
-                    PixelFormat.TRANSLUCENT);
-
-//            params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-
-            params.x = 0;
-            params.y = -50;
-            params.width = mMetrics.widthPixels;
-            params.height = mMetrics.heightPixels;
-//            params.width = metrics.widthPixels - metrics.widthPixels/50;
-//            params.width = 250;
-//            params.height = 250;
-
-//            chatHead.setAlpha(0.5f);
-//            chatHead.setVisibility(View.VISIBLE);
-//            if (firstTime) windowManager.addView(chatHead, params);
-            if(!chatHead.isAttachedToWindow()) windowManager.addView(chatHead, params);
-//            }
+            if(!imageOverlay.isAttachedToWindow()) windowManager.addView(imageOverlay, params);
         }
     };
+
+    private WindowManager.LayoutParams getParams() {
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,// | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                PixelFormat.TRANSLUCENT);
+
+//        params.gravity = Gravity.TOP;
+        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+
+        params.x = 0;
+        params.y = 0;
+        params.width = mFakeMetrics.widthPixels;
+        params.height = mFakeMetrics.heightPixels;
+        params.width = mFakeMetrics.widthPixels - mFakeMetrics.widthPixels/50;
+//            params.width = 250;
+//            params.height = 250;
+        return params;
+
+    }
 }
