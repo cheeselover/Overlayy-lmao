@@ -46,8 +46,6 @@ public class OverlayService extends AccessibilityService {
     private DisplayMetrics mFakeMetrics = new DisplayMetrics();
 
     private boolean useImage = false;
-    private int updateTime;
-    private int
 
 
     @Override
