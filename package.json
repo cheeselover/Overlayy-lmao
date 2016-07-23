@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node_modules/.bin/json-server --watch backend/db.json"
+    "start": "node_modules/.bin/json-server --watch backend/db.json -p $PORT"
   },
   "repository": {
     "type": "git",
