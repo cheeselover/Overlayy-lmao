@@ -15,7 +15,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -46,6 +45,7 @@ public class OverlayService extends AccessibilityService {
     private DisplayMetrics mFakeMetrics = new DisplayMetrics();
 
     private boolean useImage = false;
+    private Preset preset;
 
 
     @Override
@@ -57,11 +57,6 @@ public class OverlayService extends AccessibilityService {
             return;
         }
         Log.d(TAG, "res: " + source.getViewIdResourceName());
-//        try {
-//            Process sh = Runtime.getRuntime().exec("su", null, null);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @Override
@@ -75,6 +70,9 @@ public class OverlayService extends AccessibilityService {
         int resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0);
         Intent data = intent.getParcelableExtra(EXTRA_DATA);
         mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+
+        preset = intent.getParcelableExtra(EXTRA_PRESET);
+        useImage = preset.updateTime > 0;
 
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         windowManager.getDefaultDisplay().getRealMetrics(mRealMetrics);
@@ -91,7 +89,7 @@ public class OverlayService extends AccessibilityService {
                 public void run() {
                     imageHandler.sendEmptyMessage(0);
                 }
-            }, 0, 1000);
+            }, 0, preset.updateTime < 25 ? 25 : preset.updateTime);
         } else {
             surfaceHandler.sendEmptyMessage(0);
             mTimer.schedule(new TimerTask() {
@@ -117,10 +115,11 @@ public class OverlayService extends AccessibilityService {
     private void setupImageWatching() {
         if (mImageReader != null) mImageReader.close();
         if (mVirtualDisplay != null) mVirtualDisplay.release();
-        mImageReader = ImageReader.newInstance(mRealMetrics.widthPixels, mRealMetrics.heightPixels, PixelFormat.RGBA_8888, 2);
+        DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
+        mImageReader = ImageReader.newInstance(metrics.widthPixels, metrics.heightPixels, PixelFormat.RGBA_8888, 2);
 
-        mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenCapture",
-                mRealMetrics.widthPixels, mRealMetrics.heightPixels, mRealMetrics.densityDpi,
+        mVirtualDisplay = mMediaProjection.createVirtualDisplay("Overlayy lmao",
+                metrics.widthPixels, metrics.heightPixels, metrics.densityDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mImageReader.getSurface(), null, null);
     }
@@ -132,10 +131,13 @@ public class OverlayService extends AccessibilityService {
             if (surfaceOverlay == null) {
                 firstTime = true;
                 surfaceOverlay = new SurfaceView(OverlayService.this);
+//                surfaceOverlay.setRotation(90);
             }
 
-            mVirtualDisplay = mMediaProjection.createVirtualDisplay("ScreenCapture",
-                    mFakeMetrics.widthPixels, mFakeMetrics.heightPixels, mFakeMetrics.densityDpi,
+            DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
+
+            mVirtualDisplay = mMediaProjection.createVirtualDisplay("Overlayy lmao",
+                    metrics.widthPixels, metrics.heightPixels, metrics.densityDpi,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                     surfaceOverlay.getHolder().getSurface(), null, null);
 
@@ -170,9 +172,10 @@ public class OverlayService extends AccessibilityService {
         @Override
         public void handleMessage(Message msg) {
             Log.d("OVERLAYY", "imagehandlerTWO");
+            DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
             Image image = mImageReader.acquireLatestImage();
             if (image != null) {
-                int width = mRealMetrics.widthPixels;
+                int width = metrics.widthPixels;
                 int height = image.getHeight();
                 final Image.Plane[] planes = image.getPlanes();
                 final ByteBuffer buffer = planes[0].getBuffer();
@@ -195,23 +198,27 @@ public class OverlayService extends AccessibilityService {
     };
 
     private WindowManager.LayoutParams getParams() {
+        int flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        if (preset.coverStatusBar) flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+        if (preset.coverNavBar) flags |= WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,// | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                flags,
                 PixelFormat.TRANSLUCENT);
 
-//        params.gravity = Gravity.TOP;
-        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+        params.gravity = preset.horizontalGravity | preset.verticalGravity;
 
-        params.x = 0;
-        params.y = 0;
-        params.width = mFakeMetrics.widthPixels;
-        params.height = mFakeMetrics.heightPixels;
-        params.width = mFakeMetrics.widthPixels - mFakeMetrics.widthPixels/50;
-//            params.width = 250;
-//            params.height = 250;
+        params.x = preset.xOffset;
+        params.y = preset.yOffset;
+
+        DisplayMetrics metrics = preset.coverStatusBar ? mRealMetrics : mFakeMetrics;
+
+        params.width = (int) (metrics.widthPixels * (preset.width / 100f));
+        params.height = (int) (metrics.heightPixels * (preset.height / 100f));
+
         return params;
 
     }

@@ -1,6 +1,5 @@
 package solutions.overlayylmao.overlayylmao;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,6 +10,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Button;
 
 import butterknife.Bind;
@@ -18,6 +18,89 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final Preset preset;
+
+    static {
+        preset = new Preset();
+
+        // Tunnel vision
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Tunnel to the right
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 95;
+        preset.width = 92;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Slide To the right
+        preset.coverStatusBar = true;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Slide To the right big
+        preset.coverStatusBar = true;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 90;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Tunnel bottom right
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.BOTTOM;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 95;
+        preset.width = 95;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Vertical tunnel
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 95;
+        preset.width = 100;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+
+        // Vertical tunnel
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 95;
+        preset.width = 95;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+    }
 
     @Bind(R.id.start_button)
     Button mStartButton;
@@ -83,10 +166,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, OverlayService.class);
             intent.putExtra(OverlayService.EXTRA_RESULT_CODE, resultCode);
             intent.putExtra(OverlayService.EXTRA_DATA, data);
+            intent.putExtra(OverlayService.EXTRA_PRESET, preset);
             startService(intent);
-//            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//            PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-//            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000, pi);
             mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
             return;
         }
@@ -95,19 +176,6 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.start_button)
     void startService() {
-        Log.d("activity", "starting service");
-//        File scr = new File(Environment.getExternalStorageDirectory(), "scr.png");
-//        try {
-//            Process sh = Runtime.getRuntime().exec("su", null, null);
-//            OutputStream os = sh.getOutputStream();
-//            os.write(("/system/bin/screencap -p " + scr.getAbsolutePath()).getBytes("ASCII"));
-//            os.flush();
-//            os.close();
-//            sh.waitFor();
-//            Log.d("service", "image created");
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
         startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), 10);
     }
 
@@ -115,10 +183,6 @@ public class MainActivity extends AppCompatActivity {
     void stopService() {
         Log.d("activity", "stopping service");
         stopService(new Intent(this, OverlayService.class));
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, OverlayService.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-        am.cancel(pi);
         mNotificationManager.cancel(OVERLAY_NOTIFICATION_ID);
     }
 
