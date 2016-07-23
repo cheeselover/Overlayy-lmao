@@ -94,6 +94,8 @@ public class OverlayService extends AccessibilityService {
     public void onDestroy() {
         super.onDestroy();
         if (chatHead != null) windowManager.removeView(chatHead);
+        if (mMediaProjection != null) mMediaProjection.stop();
+        if (mVirtualDisplay != null) mVirtualDisplay.release();
         mTimer.cancel();
     }
 
@@ -121,13 +123,13 @@ public class OverlayService extends AccessibilityService {
 //                Log.d("service", "file exists");
 //                windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-                boolean firstTime = false;
-                if(chatHead == null) {
-                    firstTime = true;
-                    Log.d("service", "first time");
+            boolean firstTime = false;
+            if(chatHead == null) {
+                firstTime = true;
+                Log.d("service", "first time");
 //                    chatHead = new ImageView(OverlayService.this);
-                    chatHead = new SurfaceView(OverlayService.this);
-                }
+                chatHead = new SurfaceView(OverlayService.this);
+            }
 //                BitmapFactory.Options options = new BitmapFactory.Options();
 //                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 //                Bitmap bitmap = BitmapFactory.decodeFile(scr.getAbsolutePath(), options);
@@ -144,19 +146,20 @@ public class OverlayService extends AccessibilityService {
 
 //                chatHead.setImageResource(R.drawable.rainbow);
 
-                WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.WRAP_CONTENT,
-                        WindowManager.LayoutParams.TYPE_PHONE,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        PixelFormat.TRANSLUCENT);
+            WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    PixelFormat.TRANSLUCENT);
 
-                params.gravity = Gravity.TOP | Gravity.LEFT;
-                params.x = 0;
-                params.y = 0;
+            params.gravity = Gravity.TOP | Gravity.LEFT;
 
-                chatHead.setAlpha(0.5f);
-                if (firstTime) windowManager.addView(chatHead, params);
+            params.x = 0;
+            params.y = 0;
+
+            chatHead.setAlpha(0.5f);
+            if (firstTime) windowManager.addView(chatHead, params);
 //            }
         }
     };
