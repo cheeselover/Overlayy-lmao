@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 //            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //            PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
 //            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000, pi);
-//            mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
+            mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
