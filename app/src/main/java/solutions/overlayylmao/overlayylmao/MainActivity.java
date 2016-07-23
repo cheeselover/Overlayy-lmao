@@ -34,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
         preset.updateTime = 0;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
         // Tunnel to the right
         preset.coverStatusBar = false;
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         preset.updateTime = 0;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 1;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
         // Slide To the right
         preset.coverStatusBar = true;
@@ -56,6 +62,51 @@ public class MainActivity extends AppCompatActivity {
         preset.updateTime = 0;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 90;
+
+        // Sideways book
+        preset.coverStatusBar = true;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 90;
+
+        // To the middle
+        preset.coverStatusBar = true;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 1;
+        preset.scaleX = 90;
+        preset.scaleY = 100;
+
+        // Spin To the right
+        preset.coverStatusBar = true;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 1;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
         // Slide To the right big
         preset.coverStatusBar = true;
@@ -67,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
         preset.updateTime = 0;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
         // Tunnel bottom right
         preset.coverStatusBar = false;
@@ -78,28 +132,107 @@ public class MainActivity extends AppCompatActivity {
         preset.updateTime = 0;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
-        // Vertical tunnel
+        // The divide
         preset.coverStatusBar = false;
         preset.coverNavBar = false;
         preset.verticalGravity = Gravity.TOP;
         preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
+        preset.height = 98;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 1;
+        preset.scaleX = 90;
+        preset.scaleY = 110;
+
+        // The curved divide
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 98;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 5;
+        preset.scaleX = 90;
+        preset.scaleY = 110;
+
+        // Geometry
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 98;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 45;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
+
+        // A little spin
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 98;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 1;
+        preset.scaleX = 90;
+        preset.scaleY = 90;
+
+        // A bigger spin
+        preset.coverStatusBar = false;
+        preset.coverNavBar = false;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 98;
+        preset.width = 98;
+        preset.updateTime = 0;
+        preset.xOffset = 0;
+        preset.yOffset = 0;
+        preset.rotation = 10;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
+
+        // 1 fps
+        preset.coverStatusBar = true;
+        preset.coverNavBar = true;
+        preset.verticalGravity = Gravity.TOP;
+        preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
+        preset.height = 100;
         preset.width = 100;
-        preset.updateTime = 0;
+        preset.updateTime = 1500;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 0;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
 
-        // Vertical tunnel
-        preset.coverStatusBar = false;
-        preset.coverNavBar = false;
+        // 1 fps flipped
+        preset.coverStatusBar = true;
+        preset.coverNavBar = true;
         preset.verticalGravity = Gravity.TOP;
         preset.horizontalGravity = Gravity.CENTER_HORIZONTAL;
-        preset.height = 95;
-        preset.width = 95;
-        preset.updateTime = 0;
+        preset.height = 100;
+        preset.width = 100;
+        preset.updateTime = 1500;
         preset.xOffset = 0;
         preset.yOffset = 0;
+        preset.rotation = 180;
+        preset.scaleX = 100;
+        preset.scaleY = 100;
     }
 
     @Bind(R.id.start_button)
