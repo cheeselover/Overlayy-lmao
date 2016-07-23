@@ -1,0 +1,20 @@
+{
+	"presets": [
+		{
+			"id": 1,
+			"title": "tunnel vision",
+			"rotation": 0,
+			"scaleX": 100,
+			"scaleY": 100,
+			"width": 98,
+			"height": 100,
+			"updateTime": 0,
+			"xOffset": 0,
+			"yOffset": 0,
+			"horizontalGravity": 1,
+			"verticalGravity": 48,
+			"coverStatusBar": false,
+			"coverNavBar": false
+		}
+	]
+}
