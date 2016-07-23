@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     Notification mOverlayNotification;
     NotificationManager mNotificationManager;
     final int OVERLAY_NOTIFICATION_ID = 1337;
+    MediaProjectionManager mMediaProjectionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 );
         mBuilder.setContentIntent(resultPendingIntent);
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mMediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
         mOverlayNotification = mBuilder.build();
     }
@@ -69,6 +72,22 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         stopService(new Intent(this, OverlayService.class));
         mNotificationManager.cancel(OVERLAY_NOTIFICATION_ID);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 10) {
+            Intent intent = new Intent(this, OverlayService.class);
+            intent.putExtra(OverlayService.EXTRA_RESULT_CODE, resultCode);
+            intent.putExtra(OverlayService.EXTRA_DATA, data);
+            startService(intent);
+//            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+//            PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
+//            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000, pi);
+//            mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @OnClick(R.id.start_button)
@@ -86,12 +105,7 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (IOException | InterruptedException e) {
 //            e.printStackTrace();
 //        }
-        startService(new Intent(this, OverlayService.class));
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, OverlayService.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, intent, 0);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000, pi);
-        mNotificationManager.notify(OVERLAY_NOTIFICATION_ID, mOverlayNotification);
+        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), 10);
     }
 
     @OnClick(R.id.stop_button)
