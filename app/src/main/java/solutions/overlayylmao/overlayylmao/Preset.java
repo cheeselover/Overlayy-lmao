@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 
 public class Preset implements Parcelable {
+    String title;
     int updateTime;
     int verticalGravity;
     int horizontalGravity;
@@ -28,6 +29,7 @@ public class Preset implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
         dest.writeInt(this.updateTime);
         dest.writeInt(this.verticalGravity);
         dest.writeInt(this.horizontalGravity);
@@ -46,6 +48,7 @@ public class Preset implements Parcelable {
     }
 
     protected Preset(Parcel in) {
+        this.title = in.readString();
         this.updateTime = in.readInt();
         this.verticalGravity = in.readInt();
         this.horizontalGravity = in.readInt();
