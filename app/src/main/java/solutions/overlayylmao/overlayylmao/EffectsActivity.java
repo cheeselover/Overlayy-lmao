@@ -38,7 +38,10 @@ public class EffectsActivity extends AppCompatActivity {
         // use a linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mPresetRecyclerView.setLayoutManager(mLayoutManager);
+        loadData();
+    }
 
+    void loadData() {
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, "https://overlayylmao.herokuapp.com/presets", null, new Response.Listener<JSONArray>() {
 
             @Override
@@ -55,10 +58,6 @@ public class EffectsActivity extends AppCompatActivity {
         });
 
         Requester.getInstance(this).addToRequestQueue(jsonArrayRequest);
-    }
-
-    void loadData() {
-
     }
 
     @Override
